@@ -3,6 +3,7 @@
 	"displayName": "Project Da Vinci VS Code Extension",
 	"description": "Project Da Vinci VS Code Extension",
 	"version": "0.0.1",
+	"publisher": "ProjectDaVinci",
 	"engines": {
 		"vscode": "^1.49.0"
 	},
