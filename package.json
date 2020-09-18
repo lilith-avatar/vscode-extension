@@ -12,7 +12,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/endaye/vscode-plugin-test-01.git"
+		"url": "git+https://github.com/lilith-avatar/vscode-extension.git"
 	},
 	"activationEvents": [
 		"onCommand:project-da-vinci-vs-code-extension.helloWorld"
