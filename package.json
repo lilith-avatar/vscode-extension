@@ -2,26 +2,33 @@
 	"name": "project-da-vinci-vs-code-extension",
 	"displayName": "Project Da Vinci VS Code Extension",
 	"description": "Project Da Vinci VS Code Extension",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.49.0"
 	},
+	"publisher": "ProjectDaVinci",
+	"icon": "logo.png",
 	"categories": [
-		"Other"
+		"Snippets",
+		"Other",
+		"Programming Languages",
+		"Formatters"
 	],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/endaye/vscode-plugin-test-01.git"
+		"url": "git+https://github.com/lilith-avatar/vscode-extension.git"
 	},
 	"activationEvents": [
 		"onCommand:project-da-vinci-vs-code-extension.helloWorld"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [{
-			"command": "project-da-vinci-vs-code-extension.helloWorld",
-			"title": "Hello World"
-		}]
+		"commands": [
+			{
+				"command": "project-da-vinci-vs-code-extension.helloWorld",
+				"title": "Hello World"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
