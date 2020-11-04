@@ -4,7 +4,7 @@
 	"description": "Project Da Vinci VS Code Extension",
 	"version": "0.0.3",
 	"engines": {
-		"vscode": "^1.49.0"
+		"vscode": "^1.50.0"
 	},
 	"license": "MIT",
 	"publisher": "ProjectDaVinci",
@@ -21,16 +21,16 @@
 		"url": "git+https://github.com/lilith-avatar/vscode-extension.git"
 	},
 	"activationEvents": [
-		"onCommand:project-da-vinci-vs-code-extension.helloWorld"
+		"onCommand:project-da-vinci-vs-code-extension.helloDaVinci"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [{
-			"command": "project-da-vinci-vs-code-extension.helloWorld",
-			"title": "Hello World"
+			"command": "project-da-vinci-vs-code-extension.helloDaVinci",
+			"title": "Hello Da Vinci"
 		}],
 		"themes": [{
-			"label": "Avatar Theme",
+			"label": "Da Vinci",
 			"uiTheme": "vs-dark",
 			"path": "./themes/avatar-color-theme.json"
 		}]
