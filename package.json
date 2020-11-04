@@ -6,6 +6,7 @@
 	"engines": {
 		"vscode": "^1.49.0"
 	},
+	"license": "MIT",
 	"publisher": "ProjectDaVinci",
 	"icon": "logo.png",
 	"categories": [
@@ -50,5 +51,8 @@
 		"mocha": "^8.1.3",
 		"typescript": "^4.0.2",
 		"vscode-test": "^1.4.0"
+	},
+	"optionalDependencies": {
+		"fsevents": "^2.2.0"
 	}
 }
