@@ -2,18 +2,19 @@
 	"name": "project-da-vinci-vs-code-extension",
 	"displayName": "Project Da Vinci VS Code Extension",
 	"description": "Project Da Vinci VS Code Extension",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"engines": {
 		"vscode": "^1.49.0"
 	},
 	"license": "MIT",
 	"publisher": "ProjectDaVinci",
-	"icon": "logo.png",
+	"icon": "https://github.com/lilith-avatar/vscode-extension/raw/master/logo.png",
 	"categories": [
 		"Snippets",
 		"Other",
 		"Programming Languages",
-		"Formatters"
+		"Formatters",
+		"Themes"
 	],
 	"repository": {
 		"type": "git",
@@ -24,12 +25,15 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [
-			{
-				"command": "project-da-vinci-vs-code-extension.helloWorld",
-				"title": "Hello World"
-			}
-		]
+		"commands": [{
+			"command": "project-da-vinci-vs-code-extension.helloWorld",
+			"title": "Hello World"
+		}],
+		"themes": [{
+			"label": "Avatar Theme",
+			"uiTheme": "vs-dark",
+			"path": "./themes/avatar-color-theme.json"
+		}]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
