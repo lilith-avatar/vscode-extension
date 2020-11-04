@@ -1,4 +1,4 @@
-# project-da-vinci-vs-code-extension
+# VS Code Extension for Project DaVinci 
 
 达芬奇计划，VS Code 插件开发版
 
