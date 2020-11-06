@@ -28,6 +28,11 @@
 		"commands": [{
 			"command": "project-da-vinci-vs-code-extension.helloDaVinci",
 			"title": "Hello Da Vinci"
+		}],
+		"iconThemes": [{
+			"id": "avatar",
+			"label": "Da Vinci",
+			"path": "./fileicons/avatar-icon-theme.json"
 		}]
 	},
 	"scripts": {
