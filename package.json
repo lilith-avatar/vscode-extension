@@ -28,11 +28,6 @@
 		"commands": [{
 			"command": "project-da-vinci-vs-code-extension.helloDaVinci",
 			"title": "Hello Da Vinci"
-		}],
-		"themes": [{
-			"label": "Da Vinci",
-			"uiTheme": "vs-dark",
-			"path": "./themes/avatar-color-theme.json"
 		}]
 	},
 	"scripts": {
