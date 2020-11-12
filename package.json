@@ -22,7 +22,7 @@
 	},
 	"activationEvents": [
 		"onCommand:project-da-vinci-vs-code-extension.helloDaVinci",
-		"onView:codeTree"
+		"onView:fileExplorer"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -32,39 +32,44 @@
 				"title": "Hello Da Vinci"
 			},
 			{
-				"command": "codeTree.refresh",
+				"command": "fileExplorer.refreshFile",
 				"title": "Refresh",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"
 				}
-			}
-		],
-		"iconThemes": [
+			},
 			{
-				"id": "avatar",
-				"label": "Da Vinci",
-				"path": "./fileicons/avatar-icon-theme.json"
+				"command": "fileExplorer.openFile",
+				"title": "Open File"
 			}
 		],
 		"views": {
 			"explorer": [
 				{
-					"id": "codeTree",
-					"name": "DaVinci Code Tree"
+					"id": "fileExplorer",
+					"name": "Da Vinci File Tree"
 				}
 			]
 		},
 		"menus": {
 			"view/title": [
 				{
-					"command": "codeTree.refresh",
-					"when": "view == codeTree",
+					"command": "fileExplorer.refreshFile",
+					"when": "view == fileExplorer",
 					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "fileExplorer.refreshFile",
+					"when": "view == fileExplorer && viewItem == file",
+					"group": "inline"
 				}
 			]
 		}
 	},
+
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
@@ -74,6 +79,8 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
+		"@types/mkdirp": "^0.5.2",
+		"@types/rimraf": "^2.0.2",
 		"@types/vscode": "^1.49.0",
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.0.0",
@@ -90,6 +97,8 @@
 		"fsevents": "^2.2.0"
 	},
 	"dependencies": {
-		"jsonc-parser": "^2.3.1"
+		"jsonc-parser": "^2.3.1",
+		"mkdirp": "^0.5.1",
+		"rimraf": "^2.6.2"
 	}
 }

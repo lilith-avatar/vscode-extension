@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 
-import { CodeTreeProvider, Dependency } from './codeTree';
+import { FileExplorer } from './fileExplorer';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -14,11 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(helloDaVinci);
 
-	if (vscode.workspace.rootPath) {
-		const codeTreeProvider = new CodeTreeProvider(vscode.workspace.rootPath);
-		vscode.window.registerTreeDataProvider('codeTree', codeTreeProvider);
-		vscode.commands.registerCommand('codeTree.refresh', () => codeTreeProvider.refresh());
-	}
+	new FileExplorer(context);
 }
 
 // this method is called when your extension is deactivated
