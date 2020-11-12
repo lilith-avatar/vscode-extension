@@ -21,19 +21,49 @@
 		"url": "git+https://github.com/lilith-avatar/vscode-extension.git"
 	},
 	"activationEvents": [
-		"onCommand:project-da-vinci-vs-code-extension.helloDaVinci"
+		"onCommand:project-da-vinci-vs-code-extension.helloDaVinci",
+		"onView:codeTree"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [{
-			"command": "project-da-vinci-vs-code-extension.helloDaVinci",
-			"title": "Hello Da Vinci"
-		}],
-		"iconThemes": [{
-			"id": "avatar",
-			"label": "Da Vinci",
-			"path": "./fileicons/avatar-icon-theme.json"
-		}]
+		"commands": [
+			{
+				"command": "project-da-vinci-vs-code-extension.helloDaVinci",
+				"title": "Hello Da Vinci"
+			},
+			{
+				"command": "codeTree.refresh",
+				"title": "Refresh",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			}
+		],
+		"iconThemes": [
+			{
+				"id": "avatar",
+				"label": "Da Vinci",
+				"path": "./fileicons/avatar-icon-theme.json"
+			}
+		],
+		"views": {
+			"explorer": [
+				{
+					"id": "codeTree",
+					"name": "DaVinci Code Tree"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "codeTree.refresh",
+					"when": "view == codeTree",
+					"group": "navigation"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -58,5 +88,8 @@
 	},
 	"optionalDependencies": {
 		"fsevents": "^2.2.0"
+	},
+	"dependencies": {
+		"jsonc-parser": "^2.3.1"
 	}
 }
