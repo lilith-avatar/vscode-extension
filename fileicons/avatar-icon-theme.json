@@ -1,0 +1,16 @@
+{
+	"iconDefinitions": {
+		"_ava_x2l": {
+			"iconPath": "./img/ava-x2l.png"
+		},
+		"_smap": {
+			"iconPath": "./img/smap.png"
+		}
+	},
+	"fileExtensions": {
+		"smap": "_smap"
+	},
+	"fileNames": {
+		"ava-x2l.exe": "_ava_x2l"
+	}
+}
