@@ -4,7 +4,7 @@
 	"description": "Extension for Boom! Party editor (Project DaVinci).",
 	"version": "0.0.3",
 	"engines": {
-		"vscode": "^1.50.0"
+		"vscode": "^1.55.0"
 	},
 	"license": "MIT",
 	"publisher": "lilith-avatar",
@@ -26,7 +26,8 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [{
+		"commands": [
+			{
 				"command": "boom-party.helloDaVinci",
 				"title": "Hello Da Vinci"
 			},
@@ -44,22 +45,28 @@
 			}
 		],
 		"views": {
-			"explorer": [{
-				"id": "fileExplorer",
-				"name": "Boom! Tree"
-			}]
+			"explorer": [
+				{
+					"id": "fileExplorer",
+					"name": "Boom! Tree"
+				}
+			]
 		},
 		"menus": {
-			"view/title": [{
-				"command": "fileExplorer.refreshFile",
-				"when": "view == fileExplorer",
-				"group": "navigation"
-			}],
-			"view/item/context": [{
-				"command": "fileExplorer.refreshFile",
-				"when": "view == fileExplorer && viewItem == file",
-				"group": "inline"
-			}]
+			"view/title": [
+				{
+					"command": "fileExplorer.refreshFile",
+					"when": "view == fileExplorer",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "fileExplorer.refreshFile",
+					"when": "view == fileExplorer && viewItem == file",
+					"group": "inline"
+				}
+			]
 		}
 	},
 	"scripts": {
