@@ -1,14 +1,14 @@
 {
-	"name": "project-da-vinci-vs-code-extension",
-	"displayName": "Project Da Vinci VS Code Extension",
-	"description": "Project Da Vinci VS Code Extension",
+	"name": "boom-party",
+	"displayName": "Boom! Party",
+	"description": "Extension for Boom! Party editor (Project DaVinci).",
 	"version": "0.0.3",
 	"engines": {
 		"vscode": "^1.50.0"
 	},
 	"license": "MIT",
-	"publisher": "ProjectDaVinci",
-	"icon": "https://github.com/lilith-avatar/vscode-extension/raw/master/logo.png",
+	"publisher": "lilith-avatar",
+	"icon": "logo.png",
 	"categories": [
 		"Snippets",
 		"Other",
