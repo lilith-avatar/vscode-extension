@@ -1,4 +1,4 @@
-# VS Code Extension for Project DaVinci 
+# Boom! Party for VS Code 
 
 [![](https://img.shields.io/badge/-DaVinci-MediumPurple)](http://api.projectdavinci.com/)
 [![](https://img.shields.io/badge/-Ava-ff69b4)](https://github.com/lilith-avatar/avatar-ava)

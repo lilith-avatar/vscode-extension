@@ -1,14 +1,14 @@
 {
-	"name": "project-da-vinci-vs-code-extension",
-	"displayName": "Project Da Vinci VS Code Extension",
-	"description": "Project Da Vinci VS Code Extension",
+	"name": "boom-party",
+	"displayName": "Boom! Party",
+	"description": "Extension for Boom! Party editor (Project DaVinci).",
 	"version": "0.0.3",
 	"engines": {
 		"vscode": "^1.50.0"
 	},
 	"license": "MIT",
-	"publisher": "ProjectDaVinci",
-	"icon": "https://github.com/lilith-avatar/vscode-extension/raw/master/logo.png",
+	"publisher": "lilith-avatar",
+	"icon": "logo.png",
 	"categories": [
 		"Snippets",
 		"Other",
@@ -21,19 +21,23 @@
 		"url": "git+https://github.com/lilith-avatar/vscode-extension.git"
 	},
 	"activationEvents": [
-		"onCommand:project-da-vinci-vs-code-extension.helloDaVinci"
+		"onCommand:boom-party.helloDaVinci"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [{
-			"command": "project-da-vinci-vs-code-extension.helloDaVinci",
-			"title": "Hello Da Vinci"
-		}],
-		"themes": [{
-			"label": "Da Vinci",
-			"uiTheme": "vs-dark",
-			"path": "./themes/avatar-color-theme.json"
-		}]
+		"commands": [
+			{
+				"command": "boom-party.helloDaVinci",
+				"title": "Hello Da Vinci"
+			}
+		],
+		"themes": [
+			{
+				"label": "Da Vinci",
+				"uiTheme": "vs-dark",
+				"path": "./themes/avatar-color-theme.json"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
