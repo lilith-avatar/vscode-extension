@@ -6,9 +6,9 @@ import { FileExplorer } from './fileExplorer';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	console.log('Congratulations, your extension "project-da-vinci-vs-code-extension" is now active!');
+	console.log('Congratulations, your extension "boom-party" is now active!');
 
-	const helloDaVinci = vscode.commands.registerCommand('project-da-vinci-vs-code-extension.helloDaVinci', () => {
+	const helloDaVinci = vscode.commands.registerCommand('boom-party.helloDaVinci', () => {
 		vscode.window.showInformationMessage('Hello Da Vinci!');
 	});
 

@@ -21,14 +21,14 @@
 		"url": "git+https://github.com/lilith-avatar/vscode-extension.git"
 	},
 	"activationEvents": [
-		"onCommand:project-da-vinci-vs-code-extension.helloDaVinci",
+		"onCommand:boom-party.helloDaVinci",
 		"onView:fileExplorer"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "project-da-vinci-vs-code-extension.helloDaVinci",
+				"command": "boom-party.helloDaVinci",
 				"title": "Hello Da Vinci"
 			},
 			{
