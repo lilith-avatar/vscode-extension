@@ -264,10 +264,10 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
 
     // tree data provider
 
-    async getChildren(element?: Entry): Promise<Entry[]> {
+    async getChildren(element?: AvatarLua): Promise<AvatarLua[]> {
         if (element) {
             const children = await this.readDirectory(element.uri);
-            return children.map(([name, type]) => ({ uri: vscode.Uri.file(path.join(element.uri.fsPath, name)), type }));
+            return children.map(([name, type]) => ( new AvatarLua(vscode.Uri.file(path.join(element.uri.fsPath, name)),'luanode',type)));
         }
 
         if (vscode.workspace.workspaceFolders) {
@@ -279,19 +279,54 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
                 }
                 return a[1] === vscode.FileType.Directory ? -1 : 1;
             });
-            return children.map(([name, type]) => ({ uri: vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, name)), type }));
+            return children.map(([name, type]) => ( new AvatarLua(vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, name)),this.getNodePath(name)[this.getNodePath(name).length-1],type)));
         }
 
         return [];
     }
 
-    getTreeItem(element: Entry): vscode.TreeItem {
-        const treeItem = new vscode.TreeItem(element.uri, element.type === vscode.FileType.Directory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
+    getTreeItem(element: AvatarLua): vscode.TreeItem {
+        //const treeItem = new vscode.TreeItem(element.uri, element.type === vscode.FileType.Directory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
         if (element.type === vscode.FileType.File) {
-            treeItem.command = { command: 'fileExplorer.openFile', title: "Open File", arguments: [element.uri], };
-            treeItem.contextValue = 'file';
+            element.command = { command: 'fileExplorer.openFile', title: "Open File", arguments: [element.uri], };
+            element.contextValue = 'file';
         }
-        return treeItem;
+        return element;
+    }
+
+    getNodePath(fileName:string): string[] {
+        const result = fileName.match(/(?<=\')\w+(?=')/g)
+        if (result) {
+            return result;
+        }
+        else {
+            return []
+        }
+    }
+}
+
+// ************************以下为avatar脚本**********************
+//! Avatar lua节点
+export class AvatarLua extends vscode.TreeItem {
+    public type:vscode.FileType;
+
+    constructor(
+        public readonly uri: vscode.Uri,
+        public readonly label: string,
+        public readonly fileType:vscode.FileType
+    ) {
+        super(label);
+        this.resourceUri = uri
+        this.type = fileType
+    }
+}
+
+export class EmptyNode extends vscode.TreeItem {
+    constructor(
+        public readonly label:string
+    ){
+        super(label);
+        this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed
     }
 }
 
