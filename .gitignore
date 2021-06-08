@@ -105,3 +105,4 @@ dist
 
 # VS Code Extensions
 out/
+.DS_Store

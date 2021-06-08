@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import * as rimraf from 'rimraf';
+import { workspace } from 'vscode';
 
 //#region Utilities
 
@@ -145,8 +146,10 @@ export class FileStat implements vscode.FileStat {
 }
 
 interface Entry {
-    uri: vscode.Uri;
+    label: string,
+    uri: vscode.Uri | undefined;
     type: vscode.FileType;
+    subEntry: Entry[];
 }
 
 //#endregion
@@ -262,36 +265,125 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
         return _.rename(oldUri.fsPath, newUri.fsPath);
     }
 
-    // tree data provider
+    ////* avatar methods ⬇️
+
+    // 解析结果，生成对应的树
+    parseResult(result: [string, vscode.FileType][]): Entry[] {
+        const entries: Entry[] = []
+        for (let rs of result) {
+            if (rs[1] !== vscode.FileType.File) continue;
+            let filename = rs[0];
+            filename = filename.replace('.ModuleScript.lua', '')
+            filename = filename.replace('.Script.lua', '')
+            const paths = this.getNodePath(filename)
+            let tempEntries = entries
+            for (let i = 0; i < paths.length; i++) {
+                if (i == paths.length - 1) {
+                    tempEntries = this.buildTree(tempEntries, paths[i], rs[0])
+                } else {
+                    tempEntries = this.buildTree(tempEntries, paths[i])
+                }
+            }
+        }
+
+        return entries;
+    }
+
+    // 生成结果树
+    buildTree(entries: Entry[], link: string, filename?: string): Entry[] {
+        for (let entry of entries) {
+            if (entry.label == link) {
+                return entry.subEntry
+            }
+        }
+        let newEntry: Entry
+        if (filename && vscode.workspace.workspaceFolders) {
+            const workspaceFolder = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file')[0];
+            const uri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, filename))
+            newEntry = {
+                label: filename,
+                uri: uri,
+                type: vscode.FileType.File,
+                subEntry: []
+            }
+        } else {
+            newEntry = {
+                label: link,
+                uri: undefined,
+                type: vscode.FileType.SymbolicLink,
+                subEntry: []
+            }
+        }
+
+        entries.push(newEntry)
+        return newEntry.subEntry
+    }
+
+
+    ////* tree data provider methods ⬇️
 
     async getChildren(element?: Entry): Promise<Entry[]> {
         if (element) {
-            const children = await this.readDirectory(element.uri);
-            return children.map(([name, type]) => ({ uri: vscode.Uri.file(path.join(element.uri.fsPath, name)), type }));
+            if (element.type == vscode.FileType.SymbolicLink) {
+                element.subEntry.sort((a, b) => {
+                    if (a.type !== b.type) {
+                        return a.type === vscode.FileType.SymbolicLink ? -1 : 1;
+                    }
+                    return a.label.localeCompare(b.label);
+
+                });
+                return element.subEntry;
+            }
         }
 
+        // 入口
         if (vscode.workspace.workspaceFolders) {
             const workspaceFolder = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file')[0];
             const children = await this.readDirectory(workspaceFolder.uri);
             children.sort((a, b) => {
-                if (a[1] === b[1]) {
+                if (a[1] !== b[1]) {
                     return a[0].localeCompare(b[0]);
                 }
-                return a[1] === vscode.FileType.Directory ? -1 : 1;
+                return a[1] === vscode.FileType.SymbolicLink ? -1 : 1;
             });
-            return children.map(([name, type]) => ({ uri: vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, name)), type }));
+            const entries = this.parseResult(children)
+
+            return entries
         }
 
         return [];
     }
 
     getTreeItem(element: Entry): vscode.TreeItem {
-        const treeItem = new vscode.TreeItem(element.uri, element.type === vscode.FileType.Directory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
+        let treeItem: vscode.TreeItem
+        if (element.uri) {
+            treeItem = new vscode.TreeItem(
+                element.uri,
+                element.type === vscode.FileType.SymbolicLink ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
+            );
+            treeItem.label = this.getNodePath(element.label)[this.getNodePath(element.label).length - 1]
+        } else {
+            treeItem = new vscode.TreeItem(
+                element.label,
+                element.type === vscode.FileType.SymbolicLink ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
+            )
+        }
+
         if (element.type === vscode.FileType.File) {
             treeItem.command = { command: 'fileExplorer.openFile', title: "Open File", arguments: [element.uri], };
             treeItem.contextValue = 'file';
         }
         return treeItem;
+    }
+
+    getNodePath(fileName: string): string[] {
+        const result = fileName.match(/(?<=\')\w+(?=')/g)
+        if (result) {
+            return result;
+        }
+        else {
+            return []
+        }
     }
 }
 
