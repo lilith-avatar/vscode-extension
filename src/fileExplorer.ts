@@ -275,12 +275,9 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
             let filename = rs[0];
             filename = filename.replace('.ModuleScript.lua', '')
             filename = filename.replace('.Script.lua', '')
-            const paths = filename.split("\'\]\[\'")
+            const paths = this.getNodePath(filename)
             let tempEntries = entries
             for (let i = 0; i < paths.length; i++) {
-                paths[i] = paths[i].replace("\[", '')
-                paths[i] = paths[i].replace("\]", '')
-                paths[i] = paths[i].replace("'", '')
                 if (i == paths.length - 1) {
                     tempEntries = this.buildTree(tempEntries, paths[i], rs[0])
                 } else {
@@ -288,8 +285,6 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
                 }
             }
         }
-
-        // TODO: 需要将Entries进行排序，文件夹在前，lua在后
 
         return entries;
     }
@@ -330,6 +325,13 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
     async getChildren(element?: Entry): Promise<Entry[]> {
         if (element) {
             if (element.type == vscode.FileType.SymbolicLink) {
+                element.subEntry.sort((a, b) => {
+                    if (a.type !== b.type) {
+                        return a.type === vscode.FileType.SymbolicLink ? -1 : 1;
+                    }
+                    return a.label.localeCompare(b.label);
+
+                });
                 return element.subEntry;
             }
         }
@@ -339,7 +341,7 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
             const workspaceFolder = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file')[0];
             const children = await this.readDirectory(workspaceFolder.uri);
             children.sort((a, b) => {
-                if (a[1] === b[1]) {
+                if (a[1] !== b[1]) {
                     return a[0].localeCompare(b[0]);
                 }
                 return a[1] === vscode.FileType.SymbolicLink ? -1 : 1;
@@ -359,7 +361,7 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
                 element.uri,
                 element.type === vscode.FileType.SymbolicLink ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
             );
-            // TODO: 这里要缩短TreeItem的名字
+            treeItem.label = this.getNodePath(element.label)[this.getNodePath(element.label).length - 1]
         } else {
             treeItem = new vscode.TreeItem(
                 element.label,
@@ -372,6 +374,16 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
             treeItem.contextValue = 'file';
         }
         return treeItem;
+    }
+
+    getNodePath(fileName: string): string[] {
+        const result = fileName.match(/(?<=\')\w+(?=')/g)
+        if (result) {
+            return result;
+        }
+        else {
+            return []
+        }
     }
 }
 
