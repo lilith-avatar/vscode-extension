@@ -362,11 +362,19 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
                 element.type === vscode.FileType.SymbolicLink ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
             );
             treeItem.label = this.getNodePath(element.label)[this.getNodePath(element.label).length - 1]
+            treeItem.iconPath = {
+                light:path.join(__filename,'..','..','resources','script.svg'),
+                dark:path.join(__filename,'..','..','resources','script.svg')
+            }
         } else {
             treeItem = new vscode.TreeItem(
                 element.label,
                 element.type === vscode.FileType.SymbolicLink ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
             )
+            treeItem.iconPath = {
+                light:path.join(__filename,'..','..','resources','folder.svg'),
+                dark:path.join(__filename,'..','..','resources','folder.svg')
+            }
         }
 
         if (element.type === vscode.FileType.File) {

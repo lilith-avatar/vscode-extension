@@ -54,11 +54,6 @@
 				"command": "fileExplorer.refreshFile",
 				"when": "view == fileExplorer",
 				"group": "navigation"
-			}],
-			"view/item/context": [{
-				"command": "fileExplorer.refreshFile",
-				"when": "view == fileExplorer && viewItem == file",
-				"group": "inline"
 			}]
 		}
 	},
