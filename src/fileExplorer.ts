@@ -5,6 +5,11 @@ import * as mkdirp from 'mkdirp';
 import * as rimraf from 'rimraf';
 import { workspace } from 'vscode';
 
+enum NodeType  {
+    ModuleScript = 'modulescript',
+    Script = 'script'
+}
+
 //#region Utilities
 
 namespace _ {
@@ -149,12 +154,13 @@ interface Entry {
     label: string,
     uri: vscode.Uri | undefined;
     type: vscode.FileType;
+    nodeType: NodeType | undefined;
     subEntry: Entry[];
 }
 
 //#endregion
 
-export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscode.FileSystemProvider {
+export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vscode.FileSystemProvider {
 
     private _onDidChangeFile: vscode.EventEmitter<vscode.FileChangeEvent[]>;
 
@@ -304,6 +310,7 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
                 label: filename,
                 uri: uri,
                 type: vscode.FileType.File,
+                nodeType:this.getNodeType(filename),
                 subEntry: []
             }
         } else {
@@ -311,6 +318,7 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
                 label: link,
                 uri: undefined,
                 type: vscode.FileType.SymbolicLink,
+                nodeType:undefined,
                 subEntry: []
             }
         }
@@ -363,8 +371,8 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
             );
             treeItem.label = this.getNodePath(element.label)[this.getNodePath(element.label).length - 1]
             treeItem.iconPath = {
-                light:path.join(__filename,'..','..','resources','script.svg'),
-                dark:path.join(__filename,'..','..','resources','script.svg')
+                light:path.join(__filename,'..','..','resources',element.nodeType+'.svg'),
+                dark:path.join(__filename,'..','..','resources',element.nodeType+'.svg')
             }
         } else {
             treeItem = new vscode.TreeItem(
@@ -393,11 +401,22 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
             return []
         }
     }
+
+    getNodeType(fileName:string):NodeType|undefined{
+        const result = fileName.match(/(?<=\.)\w+(?=\.)/g)
+        if(result){
+            if (result[0] === 'ModuleScript'){
+                return NodeType.ModuleScript
+            }else{
+                return NodeType.Script
+            }
+        }
+    }
 }
 
 export class FileExplorer {
     constructor(context: vscode.ExtensionContext) {
-        const treeDataProvider = new FileSystemProvider();
+        const treeDataProvider = new BoomTreeDataProvider();
         context.subscriptions.push(vscode.window.createTreeView('fileExplorer', { treeDataProvider }));
         vscode.commands.registerCommand('fileExplorer.openFile', (resource) => this.openResource(resource));
     }
