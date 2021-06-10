@@ -26,7 +26,8 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [{
+		"commands": [
+			{
 				"command": "boom-party.helloDaVinci",
 				"title": "Hello Da Vinci"
 			},
@@ -44,18 +45,31 @@
 			}
 		],
 		"views": {
-			"explorer": [{
-				"id": "fileExplorer",
-				"name": "Boom! Tree"
-			}]
+			"explorer": [
+				{
+					"id": "fileExplorer",
+					"name": "Boom! Tree"
+				}
+			]
 		},
 		"menus": {
-			"view/title": [{
-				"command": "fileExplorer.refreshFile",
-				"when": "view == fileExplorer",
-				"group": "navigation"
-			}]
-		}
+			"view/title": [
+				{
+					"command": "fileExplorer.refreshFile",
+					"when": "view == fileExplorer",
+					"group": "navigation"
+				}
+			]
+		},
+		"languages": [
+			{
+				"id": "lua",
+				"extensions": [
+					".lua"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
