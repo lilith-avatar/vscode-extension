@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import * as rimraf from 'rimraf';
 import { workspace } from 'vscode';
+import EventEmitter = require('events');
 
 enum NodeType  {
     ModuleScript = 'modulescript',
@@ -163,6 +164,8 @@ interface Entry {
 export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vscode.FileSystemProvider {
 
     private _onDidChangeFile: vscode.EventEmitter<vscode.FileChangeEvent[]>;
+    private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
 
     constructor() {
         this._onDidChangeFile = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
@@ -171,6 +174,10 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     get onDidChangeFile(): vscode.Event<vscode.FileChangeEvent[]> {
         return this._onDidChangeFile.event;
     }
+
+    public refresh(): any {
+		this._onDidChangeTreeData.fire(undefined);
+	}
 
     watch(uri: vscode.Uri, options: { recursive: boolean; excludes: string[]; }): vscode.Disposable {
         const watcher = fs.watch(uri.fsPath, { recursive: options.recursive }, async (event: string, filename: string | Buffer) => {
@@ -182,6 +189,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 type: event === 'change' ? vscode.FileChangeType.Changed : await _.exists(filepath) ? vscode.FileChangeType.Created : vscode.FileChangeType.Deleted,
                 uri: uri.with({ path: filepath })
             } as vscode.FileChangeEvent]);
+            this.refresh()
         });
 
         return { dispose: () => watcher.close() };
@@ -410,8 +418,10 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
             }else{
                 return NodeType.Script
             }
+            
         }
     }
+    
 }
 
 export class FileExplorer {
@@ -419,6 +429,7 @@ export class FileExplorer {
         const treeDataProvider = new BoomTreeDataProvider();
         context.subscriptions.push(vscode.window.createTreeView('fileExplorer', { treeDataProvider }));
         vscode.commands.registerCommand('fileExplorer.openFile', (resource) => this.openResource(resource));
+        vscode.commands.registerCommand('fileExplorer.refreshFile',()=>treeDataProvider.refresh())
     }
 
     private openResource(resource: vscode.Uri): void {
