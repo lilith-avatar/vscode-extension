@@ -167,6 +167,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
     private autoRefresh = true;
+    private fsWathcer:vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher("**/*.lua",false,false,false);
 
     constructor() {
         this._onDidChangeFile = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
@@ -187,6 +188,26 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         vscode.workspace.onDidChangeWorkspaceFolders(() => {
             this.refresh()
         });
+        vscode.workspace.onDidGrantWorkspaceTrust(()=>{
+            this.refresh()
+        });
+        vscode.workspace.onDidChangeConfiguration(()=>{
+            this.refresh()
+        });
+        this.fsWathcer.onDidChange(()=>{
+            
+            this.refresh()
+        })
+        this.fsWathcer.onDidCreate(()=>{
+            console.log('create');
+            
+            this.refresh()
+        })
+        this.fsWathcer.onDidDelete(()=>{
+            console.log('delete');
+            
+            this.refresh()
+        })
     }
 
     get onDidChangeFile(): vscode.Event<vscode.FileChangeEvent[]> {
@@ -208,7 +229,6 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 type: event === 'change' ? vscode.FileChangeType.Changed : await _.exists(filepath) ? vscode.FileChangeType.Created : vscode.FileChangeType.Deleted,
                 uri: uri.with({ path: filepath })
             } as vscode.FileChangeEvent]);
-            this.refresh()
         });
 
         return { dispose: () => watcher.close() };
