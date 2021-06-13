@@ -175,6 +175,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         //setInterval(()=>this.refresh(),1)
     }
 
+    //Todo 这个也需要优化一下
     bindWorkspaceEvent() {
         vscode.workspace.onDidRenameFiles(() => {
             this.refresh()
@@ -186,12 +187,6 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
             this.refresh()
         });
         vscode.workspace.onDidChangeWorkspaceFolders(() => {
-            this.refresh()
-        });
-        vscode.workspace.onDidGrantWorkspaceTrust(()=>{
-            this.refresh()
-        });
-        vscode.workspace.onDidChangeConfiguration(()=>{
             this.refresh()
         });
         this.fsWathcer.onDidChange(()=>{
@@ -209,7 +204,6 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         return this._onDidChangeFile.event;
     }
 
-    // todo: 自动刷新
     public refresh(): any {
         this._onDidChangeTreeData.fire(undefined);
     }
