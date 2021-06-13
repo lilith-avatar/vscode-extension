@@ -195,17 +195,12 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
             this.refresh()
         });
         this.fsWathcer.onDidChange(()=>{
-            
             this.refresh()
         })
         this.fsWathcer.onDidCreate(()=>{
-            console.log('create');
-            
             this.refresh()
         })
         this.fsWathcer.onDidDelete(()=>{
-            console.log('delete');
-            
             this.refresh()
         })
     }
