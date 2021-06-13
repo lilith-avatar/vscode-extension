@@ -46,7 +46,8 @@
 		"views": {
 			"explorer": [{
 				"id": "fileExplorer",
-				"name": "Boom! Tree"
+				"name": "Boom! Tree",
+				"when": "config.boomTree.visible"
 			}]
 		},
 		"menus": {
@@ -55,6 +56,16 @@
 				"when": "view == fileExplorer",
 				"group": "navigation"
 			}]
+		},
+		"configuration":{
+			"title": "Boom! Party configuration",
+			"properties": {
+				"boomTree.visible":{
+					"type":"boolean",
+					"default":"true",
+					"description": "是否显示树状图"
+				}
+			}
 		}
 	},
 	"scripts": {
