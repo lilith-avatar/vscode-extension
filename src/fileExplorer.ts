@@ -166,38 +166,27 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     private _onDidChangeFile: vscode.EventEmitter<vscode.FileChangeEvent[]>;
     private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
-    private autoRefresh = true;
     private fsWathcer:vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher("**/*.lua",false,false,false);
 
     constructor() {
         this._onDidChangeFile = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
         this.bindWorkspaceEvent()
-        //setInterval(()=>this.refresh(),1)
     }
 
     //Todo 这个也需要优化一下
     bindWorkspaceEvent() {
-        vscode.workspace.onDidRenameFiles(() => {
-            this.refresh()
-        });
-        vscode.workspace.onDidCreateFiles(() => {
-            this.refresh()
-        });
-        vscode.workspace.onDidDeleteFiles(() => {
-            this.refresh()
-        });
         vscode.workspace.onDidChangeWorkspaceFolders(() => {
             this.refresh()
         });
         this.fsWathcer.onDidChange(()=>{
             this.refresh()
-        })
+        });
         this.fsWathcer.onDidCreate(()=>{
             this.refresh()
-        })
+        });
         this.fsWathcer.onDidDelete(()=>{
             this.refresh()
-        })
+        });
     }
 
     get onDidChangeFile(): vscode.Event<vscode.FileChangeEvent[]> {
@@ -391,10 +380,11 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 return a[1] === vscode.FileType.SymbolicLink ? -1 : 1;
             });
             const entries = this.parseResult(children)
-            // Todo: 若没有entries,则隐藏树状图
+            this.treeVisible = true
             return entries
+            
         }
-
+        this.treeVisible = false
         return [];
     }
 
@@ -426,7 +416,6 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
             treeItem.contextValue = 'file';
         }
 
-        treeItem.contextValue = 'avatarNode'
         return treeItem;
     }
 
@@ -452,14 +441,20 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         }
     }
 
+    
+
 }
 
 export class FileExplorer {
+    private boomTreeViewer:vscode.TreeView<Entry>;
+
     constructor(context: vscode.ExtensionContext) {
         const treeDataProvider = new BoomTreeDataProvider();
+        this.boomTreeViewer = vscode.window.createTreeView('fileExplorer', { treeDataProvider });
         context.subscriptions.push(vscode.window.createTreeView('fileExplorer', { treeDataProvider }));
         vscode.commands.registerCommand('fileExplorer.openFile', (resource) => this.openResource(resource));
         vscode.commands.registerCommand('fileExplorer.refreshFile', () => treeDataProvider.refresh())
+        vscode.commands.registerCommand('fileExplorer.revealResource',()=> this.reveal());
     }
 
     private openResource(resource: vscode.Uri): void {
