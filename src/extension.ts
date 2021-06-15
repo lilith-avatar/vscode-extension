@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Lilith Games, Avatar Team.
+ *  Licensed under the MIT License.
+ *--------------------------------------------------------------------------------------------*/
+
 'use strict';
 
 import * as vscode from 'vscode';
@@ -13,10 +18,6 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(helloDaVinci);
-
-	context.subscriptions.push(vscode.commands.registerCommand('fileExplorer.refreshFile',()=>{
-		new FileExplorer(context);
-	}))
 
 	new FileExplorer(context);
 }

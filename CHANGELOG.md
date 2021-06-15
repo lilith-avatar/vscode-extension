@@ -1,9 +1,13 @@
-# Change Log
+## `v0.1.1` (2021-6-13)
 
-All notable changes to the "boom-party" extension will be documented in this file.
+### Improvement
+- 增加了树状图的自动刷新
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## `v0.1.0` (2021-6-10)
 
-## [Unreleased]
+### New Features
 
-- Initial release
+![](./resources/snapshot/BoomTree.png)
+
+- 新增了Boom! Tree功能，根据编辑器导出的lua文件名生成编辑器内对应的树状图，包含图标
+
