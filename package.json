@@ -26,8 +26,7 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [
-			{
+		"commands": [{
 				"command": "boom-party.helloDaVinci",
 				"title": "Hello Da Vinci"
 			},
@@ -58,23 +57,34 @@
 				"group": "navigation"
 			}]
 		},
-		"configuration":{
+		"configuration": {
 			"title": "Boom! Party configuration",
 			"properties": {
-				"boomTree.visible":{
-					"type":"boolean",
-					"default":"true",
+				"boomTree.visible": {
+					"type": "boolean",
+					"default": "true",
 					"description": "是否显示树状图"
 				}
 			}
 		},
-		"languages": [
+		"languages": [{
+			"id": "lua",
+			"extensions": [
+				".lua"
+			],
+			"configuration": "./language-configuration.json"
+		}],
+		"snippets": [{
+				"language": "lua",
+				"path": "./snippets/ava.json"
+			},
 			{
-				"id": "lua",
-				"extensions": [
-					".lua"
-				],
-				"configuration": "./language-configuration.json"
+				"language": "lua",
+				"path": "./snippets/lua.json"
+			},
+			{
+				"language": "lua",
+				"path": "./snippets/ldoc.json"
 			}
 		]
 	},
