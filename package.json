@@ -2,7 +2,7 @@
 	"name": "boom-party",
 	"displayName": "Boom! Party",
 	"description": "Extension for Boom! Party editor (Project DaVinci).",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
@@ -67,7 +67,16 @@
 					"description": "是否显示树状图"
 				}
 			}
-		}
+		},
+		"languages": [
+			{
+				"id": "lua",
+				"extensions": [
+					".lua"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
