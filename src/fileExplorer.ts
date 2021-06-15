@@ -380,11 +380,9 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 return a[1] === vscode.FileType.SymbolicLink ? -1 : 1;
             });
             const entries = this.parseResult(children)
-            this.treeVisible = true
             return entries
             
         }
-        this.treeVisible = false
         return [];
     }
 
@@ -454,7 +452,6 @@ export class FileExplorer {
         context.subscriptions.push(vscode.window.createTreeView('fileExplorer', { treeDataProvider }));
         vscode.commands.registerCommand('fileExplorer.openFile', (resource) => this.openResource(resource));
         vscode.commands.registerCommand('fileExplorer.refreshFile', () => treeDataProvider.refresh())
-        vscode.commands.registerCommand('fileExplorer.revealResource',()=> this.reveal());
     }
 
     private openResource(resource: vscode.Uri): void {
