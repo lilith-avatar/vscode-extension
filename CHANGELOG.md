@@ -1,3 +1,8 @@
+## `v0.1.3` (2021-6-15)
+
+### Improvement
+- github自动发布
+
 ## `v0.1.2` (2021-6-15)
 
 ### Improvement
