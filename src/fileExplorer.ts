@@ -1,3 +1,9 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Lilith Games, Avatar Team.
+ *  Licensed under the MIT License.
+ *  @author Yuancheng Zhang, Yen Yuan
+ *--------------------------------------------------------------------------------------------*/
+
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
