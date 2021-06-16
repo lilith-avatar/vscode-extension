@@ -1,0 +1,31 @@
+{
+    "name": "boom-party-client",
+    "displayName": "Boom! Party",
+    "description": "Extension for Boom! Party editor (Project DaVinci).",
+    "version": "0.2.0",
+    "engines": {
+        "vscode": "^1.55.0"
+    },
+    "license": "MIT",
+    "publisher": "lilith-avatar",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lilith-avatar/vscode-extension.git"
+    },
+    "main": "./client/out/extension.js",
+    "contributes": {
+        
+
+    },
+
+    "devDependencies": {
+        "@types/vscode": "^1.55.0",
+        "vscode-test": "^1.5.2"
+    },
+    "optionalDependencies": {
+        "fsevents": "^2.2.0"
+    },
+    "dependencies": {
+        "vscode-languageclient": "^7.0.0"
+    }
+}

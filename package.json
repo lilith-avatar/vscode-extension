@@ -24,30 +24,50 @@
 		"onCommand:boom-party.helloDaVinci",
 		"onView:fileExplorer"
 	],
-	"main": "./out/extension.js",
+	"main": "./client/out/extension.js",
 	"contributes": {
-		"commands": [{
+		"languages": [{
+            "id": "lua",
+            "extensions": [
+                ".lua"
+            ],
+            "configuration": "./language-configuration.json"
+        }],
+        "snippets": [{
+                "language": "lua",
+                "path": "./snippets/ava.json"
+            },
+            {
+                "language": "lua",
+                "path": "./snippets/lua.json"
+            },
+            {
+                "language": "lua",
+                "path": "./snippets/ldoc.json"
+            }
+        ],
+        "commands": [
+			{
 				"command": "boom-party.helloDaVinci",
 				"title": "Hello Da Vinci"
 			},
 			{
-				"command": "fileExplorer.refreshFile",
-				"title": "Refresh",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
-			},
-			{
-				"command": "fileExplorer.openFile",
-				"title": "Open File"
-			}
-		],
-		"views": {
+                "command": "fileExplorer.refreshFile",
+                "title": "Refresh",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
+            },
+            {
+                "command": "fileExplorer.openFile",
+                "title": "Open File"
+            }
+        ],
+        "views": {
 			"explorer": [{
 				"id": "fileExplorer",
-				"name": "Boom! Tree",
-				"when": "config.boomTree.visible"
+				"name": "Boom! Tree"
 			}]
 		},
 		"menus": {
@@ -60,41 +80,32 @@
 		"configuration": {
 			"title": "Boom! Party configuration",
 			"properties": {
-				"boomTree.visible": {
-					"type": "boolean",
-					"default": "true",
-					"description": "是否显示树状图"
+				"languageServer.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 100,
+					"description": "Controls the maximum number of problems produced by the server."
+				},
+				"languageServer.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VS Code and the language server."
 				}
 			}
-		},
-		"languages": [{
-			"id": "lua",
-			"extensions": [
-				".lua"
-			],
-			"configuration": "./language-configuration.json"
-		}],
-		"snippets": [{
-				"language": "lua",
-				"path": "./snippets/ava.json"
-			},
-			{
-				"language": "lua",
-				"path": "./snippets/lua.json"
-			},
-			{
-				"language": "lua",
-				"path": "./snippets/ldoc.json"
-			}
-		]
+		}
+		
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"test": "node ./out/test/runTest.js"
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd .."
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.3",

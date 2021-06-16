@@ -182,16 +182,16 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     //Todo 这个也需要优化一下
     bindWorkspaceEvent() {
         vscode.workspace.onDidChangeWorkspaceFolders(() => {
-            this.refresh()
+            this.refresh();
         });
         this.fsWathcer.onDidChange(()=>{
-            this.refresh()
+            this.refresh();
         });
         this.fsWathcer.onDidCreate(()=>{
-            this.refresh()
+            this.refresh();
         });
         this.fsWathcer.onDidDelete(()=>{
-            this.refresh()
+            this.refresh();
         });
     }
 
@@ -276,7 +276,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         if (options.recursive) {
             return _.rmrf(uri.fsPath);
         }
-        this.refresh()
+        this.refresh();
         return _.unlink(uri.fsPath);
     }
 
@@ -298,7 +298,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         if (!parentExists) {
             await _.mkdir(path.dirname(newUri.fsPath));
         }
-        this.refresh()
+        this.refresh();
         return _.rename(oldUri.fsPath, newUri.fsPath);
     }
 
@@ -306,19 +306,19 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
 
     // 解析结果，生成对应的树
     parseResult(result: [string, vscode.FileType][]): Entry[] {
-        const entries: Entry[] = []
+        const entries: Entry[] = [];
         for (let rs of result) {
             if (rs[1] !== vscode.FileType.File) continue;
             let filename = rs[0];
-            filename = filename.replace('.ModuleScript.lua', '')
-            filename = filename.replace('.Script.lua', '')
-            const paths = this.getNodePath(filename)
-            let tempEntries = entries
+            filename = filename.replace('.ModuleScript.lua', '');
+            filename = filename.replace('.Script.lua', '');
+            const paths = this.getNodePath(filename);
+            let tempEntries = entries;
             for (let i = 0; i < paths.length; i++) {
-                if (i == paths.length - 1) {
-                    tempEntries = this.buildTree(tempEntries, paths[i], rs[0])
+                if (i === paths.length - 1) {
+                    tempEntries = this.buildTree(tempEntries, paths[i], rs[0]);
                 } else {
-                    tempEntries = this.buildTree(tempEntries, paths[i])
+                    tempEntries = this.buildTree(tempEntries, paths[i]);
                 }
             }
         }
@@ -329,21 +329,21 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     // 生成结果树
     buildTree(entries: Entry[], link: string, filename?: string): Entry[] {
         for (let entry of entries) {
-            if (entry.label == link) {
-                return entry.subEntry
+            if (entry.label === link) {
+                return entry.subEntry;
             }
         }
-        let newEntry: Entry
+        let newEntry: Entry;
         if (filename && vscode.workspace.workspaceFolders) {
             const workspaceFolder = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file')[0];
-            const uri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, filename))
+            const uri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, filename));
             newEntry = {
                 label: filename,
                 uri: uri,
                 type: vscode.FileType.File,
                 nodeType: this.getNodeType(filename),
                 subEntry: []
-            }
+            };
         } else {
             newEntry = {
                 label: link,
@@ -351,11 +351,11 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 type: vscode.FileType.SymbolicLink,
                 nodeType: undefined,
                 subEntry: []
-            }
+            };
         }
 
-        entries.push(newEntry)
-        return newEntry.subEntry
+        entries.push(newEntry);
+        return newEntry.subEntry;
     }
 
 
@@ -363,7 +363,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
 
     async getChildren(element?: Entry): Promise<Entry[]> {
         if (element) {
-            if (element.type == vscode.FileType.SymbolicLink) {
+            if (element.type === vscode.FileType.SymbolicLink) {
                 element.subEntry.sort((a, b) => {
                     if (a.type !== b.type) {
                         return a.type === vscode.FileType.SymbolicLink ? -1 : 1;
@@ -385,34 +385,34 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 }
                 return a[1] === vscode.FileType.SymbolicLink ? -1 : 1;
             });
-            const entries = this.parseResult(children)
-            return entries
+            const entries = this.parseResult(children);
+            return entries;
             
         }
         return [];
     }
 
     getTreeItem(element: Entry): vscode.TreeItem {
-        let treeItem: vscode.TreeItem
+        let treeItem: vscode.TreeItem;
         if (element.uri) {
             treeItem = new vscode.TreeItem(
                 element.uri,
                 element.type === vscode.FileType.SymbolicLink ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
             );
-            treeItem.label = this.getNodePath(element.label)[this.getNodePath(element.label).length - 1]
+            treeItem.label = this.getNodePath(element.label)[this.getNodePath(element.label).length - 1];
             treeItem.iconPath = {
-                light: path.join(__filename, '..', '..', 'resources', element.nodeType + '.svg'),
-                dark: path.join(__filename, '..', '..', 'resources', element.nodeType + '.svg')
-            }
+                light: path.join(__filename, '..', '..', '..','resources', element.nodeType + '.svg'),
+                dark: path.join(__filename, '..', '..', '..','resources', element.nodeType + '.svg')
+            };
         } else {
             treeItem = new vscode.TreeItem(
                 element.label,
                 element.type === vscode.FileType.SymbolicLink ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
-            )
+            );
             treeItem.iconPath = {
-                light: path.join(__filename, '..', '..', 'resources', 'folder.svg'),
-                dark: path.join(__filename, '..', '..', 'resources', 'folder.svg')
-            }
+                light: path.join(__filename, '..', '..', '..','resources', 'folder.svg'),
+                dark: path.join(__filename, '..', '..', '..','resources', 'folder.svg')
+            };
         }
 
         if (element.type === vscode.FileType.File) {
@@ -424,22 +424,22 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     }
 
     getNodePath(fileName: string): string[] {
-        const result = fileName.match(/(?<=\')\w+(?=')/g)
+        const result = fileName.match(/(?<=\')\w+(?=')/g);
         if (result) {
             return result;
         }
         else {
-            return []
+            return [];
         }
     }
 
     getNodeType(fileName: string): NodeType | undefined {
-        const result = fileName.match(/(?<=\.)\w+(?=\.)/g)
+        const result = fileName.match(/(?<=\.)\w+(?=\.)/g);
         if (result) {
             if (result[0] === 'ModuleScript') {
-                return NodeType.ModuleScript
+                return NodeType.ModuleScript;
             } else {
-                return NodeType.Script
+                return NodeType.Script;
             }
 
         }
@@ -457,7 +457,7 @@ export class FileExplorer {
         this.boomTreeViewer = vscode.window.createTreeView('fileExplorer', { treeDataProvider });
         context.subscriptions.push(vscode.window.createTreeView('fileExplorer', { treeDataProvider }));
         vscode.commands.registerCommand('fileExplorer.openFile', (resource) => this.openResource(resource));
-        vscode.commands.registerCommand('fileExplorer.refreshFile', () => treeDataProvider.refresh())
+        vscode.commands.registerCommand('fileExplorer.refreshFile', () => treeDataProvider.refresh());
     }
 
     private openResource(resource: vscode.Uri): void {
