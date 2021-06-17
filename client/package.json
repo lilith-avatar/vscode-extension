@@ -13,11 +13,7 @@
         "url": "git+https://github.com/lilith-avatar/vscode-extension.git"
     },
     "main": "./client/out/extension.js",
-    "contributes": {
-        
-
-    },
-
+    "contributes": {},
     "devDependencies": {
         "@types/vscode": "^1.55.0",
         "vscode-test": "^1.5.2"
@@ -26,6 +22,8 @@
         "fsevents": "^2.2.0"
     },
     "dependencies": {
-        "vscode-languageclient": "^7.0.0"
+        "log4js": "^6.3.0",
+        "vscode-languageclient": "^7.0.0",
+        "ws": "^7.4.6"
     }
 }
