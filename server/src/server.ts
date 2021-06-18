@@ -1,7 +1,6 @@
 import {
 	createConnection,
 	ProposedFeatures,
-	WatchDog,
 	TextDocuments,
 	Connection,
 	InitializeParams,
@@ -11,21 +10,6 @@ import {
 	CompletionItemKind
 } from 'vscode-languageserver/node';
 import {TextDocument} from 'vscode-languageserver-textdocument';
-import {configure,getLogger} from 'log4js';
-
-configure({
-	appenders:{
-		boom_party:{
-			type:"dateFile",
-			filename:"boomPartLog",
-			pattern:"yyyy-MM-dd-hh.log",
-			alwaysIncludePattern:true,
-		},
-	},
-	categories:{default:{appenders:["boom_party"],level:"debug"}}
-});
-
-const logger = getLogger("boom_party");
 
 // let watchDog = new WatchDog
 // 创建链接，通过ipc管道与客户端通信
@@ -42,6 +26,10 @@ connection.onInitialize((params:InitializeParams)=>{
 
 	return {
 		capabilities:{
+			textDocumentSync:{
+				openClose:true,
+				change:TextDocumentSyncKind.Incremental
+			},
 			completionProvider:{
 				resolveProvider: true
 			}
@@ -54,6 +42,7 @@ connection.onInitialized(()=>{
 	connection.window.showInformationMessage('Hello World! from server side.');
 });
 
+// 以下为范例，可以用json来转
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] =>{
 		return [

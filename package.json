@@ -126,7 +126,14 @@
 					"description": "The WebSocket port to stream LSP log data into."
 				}
 			}
-		}
+		},
+		"grammars": [
+			{
+				"language": "lua",
+				"scopeName": "source.lua",
+				"path": "./syntaxes/lua.tmLanguage.json"
+			}
+		]
 		
 	},
 	"scripts": {
