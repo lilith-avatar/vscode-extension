@@ -164,6 +164,7 @@ interface Entry {
 export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vscode.FileSystemProvider {
 
     private _onDidChangeFile: vscode.EventEmitter<vscode.FileChangeEvent[]>;
+    private luaFiles: any[] = [];
     private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
     private fsWathcer: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher("**/*.lua", false, false, false);
@@ -227,7 +228,6 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
 
     async _readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
         const children = await _.readdir(uri.fsPath);
-
         var result: [string, vscode.FileType][] = [];
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
@@ -338,6 +338,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         }
         let newEntry: Entry;
         if (filename && vscode.workspace.workspaceFolders) {
+            // todo: 这里应该读取所有文件夹下的文件
             const workspaceFolder = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file')[0];
             const uri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, filename));
             newEntry = {
