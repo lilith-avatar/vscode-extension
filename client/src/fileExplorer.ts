@@ -167,11 +167,12 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     private luaFiles: any[] = [];
     private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
-    private fsWathcer:vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher("**/*.lua",false,false,false);
+    private fsWathcer: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher("**/*.lua", false, false, false);
+    private readStreamStack: vscode.Uri[] = [];
 
     constructor() {
         this._onDidChangeFile = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
-        this.bindWorkspaceEvent()
+        this.bindWorkspaceEvent();
     }
 
     //Todo 这个也需要优化一下
@@ -179,13 +180,13 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         vscode.workspace.onDidChangeWorkspaceFolders(() => {
             this.refresh();
         });
-        this.fsWathcer.onDidChange(()=>{
+        this.fsWathcer.onDidChange(() => {
             this.refresh();
         });
-        this.fsWathcer.onDidCreate(()=>{
+        this.fsWathcer.onDidCreate(() => {
             this.refresh();
         });
-        this.fsWathcer.onDidDelete(()=>{
+        this.fsWathcer.onDidDelete(() => {
             this.refresh();
         });
     }
@@ -227,18 +228,15 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
 
     async _readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
         const children = await _.readdir(uri.fsPath);
-        console.log(uri);
-        
         var result: [string, vscode.FileType][] = [];
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             const stat = await this._stat(path.join(uri.fsPath, child));
-            if (stat.type === vscode.FileType.File){
+            if (stat.type === vscode.FileType.File && this.isLua(child)) {
                 result.push([child, stat.type]);
-            }else{
+            } else if (stat.type === vscode.FileType.Directory) {
                 const dirUri = vscode.Uri.file(path.join(uri.fsPath, child));
                 const fileInFolder = await this.readDirectory(dirUri);
-                console.log(fileInFolder);
                 result = result.concat(fileInFolder);
             }
         }
@@ -278,7 +276,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         if (options.recursive) {
             return _.rmrf(uri.fsPath);
         }
-        this.refresh()
+        this.refresh();
         return _.unlink(uri.fsPath);
     }
 
@@ -300,42 +298,45 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         if (!parentExists) {
             await _.mkdir(path.dirname(newUri.fsPath));
         }
-        this.refresh()
+        this.refresh();
         return _.rename(oldUri.fsPath, newUri.fsPath);
     }
 
     ////* avatar methods ⬇️
 
     // 解析结果，生成对应的树
-    parseResult(result: [string, vscode.FileType][]): Entry[] {
-        const entries: Entry[] = []
+    parseResult(result: [string, vscode.FileType][],folderName?:string): Entry[] {
+        let entries: Entry[] = [];
+        entries = [{label:folderName,uri:undefined,type:vscode.FileType.SymbolicLink,subEntry:[]}];
+        
         for (let rs of result) {
             if (rs[1] !== vscode.FileType.File) continue;
             let filename = rs[0];
-            filename = filename.replace('.ModuleScript.lua', '')
-            filename = filename.replace('.Script.lua', '')
-            const paths = this.getNodePath(filename)
-            let tempEntries = entries
+            filename = filename.replace('.ModuleScript.lua', '');
+            filename = filename.replace('.Script.lua', '');
+            const paths = this.getNodePath(filename);
+            let tempEntries = entries[0].subEntry;
+            
             for (let i = 0; i < paths.length; i++) {
-                if (i == paths.length - 1) {
-                    tempEntries = this.buildTree(tempEntries, paths[i], rs[0])
+                if (i === paths.length - 1) {
+                    tempEntries = this.buildTree(tempEntries, paths[i], rs[0]);
                 } else {
-                    tempEntries = this.buildTree(tempEntries, paths[i])
+                    tempEntries = this.buildTree(tempEntries, paths[i]);
                 }
             }
         }
-
+        
         return entries;
     }
 
     // 生成结果树
     buildTree(entries: Entry[], link: string, filename?: string): Entry[] {
         for (let entry of entries) {
-            if (entry.label == link) {
-                return entry.subEntry
+            if (entry.label === link) {
+                return entry.subEntry;
             }
         }
-        let newEntry: Entry
+        let newEntry: Entry;
         if (filename && vscode.workspace.workspaceFolders) {
             // todo: 这里应该读取所有文件夹下的文件
             const workspaceFolder = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file')[0];
@@ -345,18 +346,18 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 uri: uri,
                 type: vscode.FileType.File,
                 subEntry: []
-            }
+            };
         } else {
             newEntry = {
                 label: link,
                 uri: undefined,
                 type: vscode.FileType.SymbolicLink,
                 subEntry: []
-            }
+            };
         }
 
-        entries.push(newEntry)
-        return newEntry.subEntry
+        entries.push(newEntry);
+        return newEntry.subEntry;
     }
 
 
@@ -364,7 +365,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
 
     async getChildren(element?: Entry): Promise<Entry[]> {
         if (element) {
-            if (element.type == vscode.FileType.SymbolicLink) {
+            if (element.type === vscode.FileType.SymbolicLink) {
                 element.subEntry.sort((a, b) => {
                     if (a.type !== b.type) {
                         return a.type === vscode.FileType.SymbolicLink ? -1 : 1;
@@ -378,42 +379,44 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
 
         // 入口
         if (vscode.workspace.workspaceFolders) {
-            const workspaceFolder = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file')[0];
-            const children = await this.readDirectory(workspaceFolder.uri);
-            children.sort((a, b) => {
-                if (a[1] !== b[1]) {
-                    return a[0].localeCompare(b[0]);
-                }
-                return a[1] === vscode.FileType.SymbolicLink ? -1 : 1;
-            });
-            const entries = this.parseResult(children)
-            return entries
-            
+            const workspaceFolders = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file');
+            var entries = [];
+            for (let i = 0; i < workspaceFolders.length; i++) {
+                const children = await this.readDirectory(workspaceFolders[i].uri);
+                children.sort((a, b) => {
+                    if (a[1] !== b[1]) {
+                        return a[0].localeCompare(b[0]);
+                    }
+                    return a[1] === vscode.FileType.SymbolicLink ? -1 : 1;
+                });
+                entries = entries.concat(this.parseResult(children,workspaceFolders[i].name));
+            }
+            return entries;
         }
         return [];
     }
 
     getTreeItem(element: Entry): vscode.TreeItem {
-        let treeItem: vscode.TreeItem
+        let treeItem: vscode.TreeItem;
         if (element.uri) {
             treeItem = new vscode.TreeItem(
                 element.uri,
                 element.type === vscode.FileType.SymbolicLink ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
             );
-            treeItem.label = this.getNodePath(element.label)[this.getNodePath(element.label).length - 1]
+            treeItem.label = this.getNodePath(element.label)[this.getNodePath(element.label).length - 1];
             treeItem.iconPath = {
-                light: path.join(__filename, '..', '..', 'resources', this.getNodeType(element.label) + '.svg'),
-                dark: path.join(__filename, '..', '..', 'resources', this.getNodeType(element.label) + '.svg')
-            }
+                light: path.join(__filename, '..', '..', '..', 'resources', this.getNodeType(element.label) + '.svg'),
+                dark: path.join(__filename, '..', '..', '..', 'resources', this.getNodeType(element.label) + '.svg')
+            };
         } else {
             treeItem = new vscode.TreeItem(
                 element.label,
                 element.type === vscode.FileType.SymbolicLink ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
-            )
+            );
             treeItem.iconPath = {
-                light: path.join(__filename, '..', '..', 'resources', 'folder.svg'),
-                dark: path.join(__filename, '..', '..', 'resources', 'folder.svg')
-            }
+                light: path.join(__filename, '..', '..', '..', 'resources', 'folder.svg'),
+                dark: path.join(__filename, '..', '..', '..', 'resources', 'folder.svg')
+            };
         }
 
         if (element.type === vscode.FileType.File) {
@@ -425,12 +428,12 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     }
 
     getNodePath(fileName: string): string[] {
-        const result = fileName.match(/(?<=\')\w+(?=')/g)
+        const result = fileName.match(/(?<=\')\w+(?=')/g);
         if (result) {
             return result;
         }
         else {
-            return []
+            return [];
         }
     }
 
@@ -442,19 +445,26 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         return;
     }
 
-    
-
+    isLua(fileName: string): boolean {
+        const fileExtension = fileName.match(/(?<=\.)\w+(?=$)/g);
+        if (fileExtension) {
+            if (fileExtension[0] === 'lua') {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 export class FileExplorer {
-    private boomTreeViewer:vscode.TreeView<Entry>;
+    private boomTreeViewer: vscode.TreeView<Entry>;
 
     constructor(context: vscode.ExtensionContext) {
         const treeDataProvider = new BoomTreeDataProvider();
         this.boomTreeViewer = vscode.window.createTreeView('fileExplorer', { treeDataProvider });
         context.subscriptions.push(vscode.window.createTreeView('fileExplorer', { treeDataProvider }));
         vscode.commands.registerCommand('fileExplorer.openFile', (resource) => this.openResource(resource));
-        vscode.commands.registerCommand('fileExplorer.refreshFile', () => treeDataProvider.refresh())
+        vscode.commands.registerCommand('fileExplorer.refreshFile', () => treeDataProvider.refresh());
     }
 
     private openResource(resource: vscode.Uri): void {
