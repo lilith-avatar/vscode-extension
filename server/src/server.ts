@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Lilith Games, Avatar Team.
+ *  Licensed under the MIT License.
+ *--------------------------------------------------------------------------------------------*/
+
 import {
 	createConnection,
 	ProposedFeatures,
@@ -9,7 +14,7 @@ import {
 	CompletionItem,
 	CompletionItemKind
 } from 'vscode-languageserver/node';
-import {TextDocument} from 'vscode-languageserver-textdocument';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 
 // let watchDog = new WatchDog
 // 创建链接，通过ipc管道与客户端通信
@@ -21,16 +26,16 @@ let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
 
-connection.onInitialize((params:InitializeParams)=>{
+connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
 
 	return {
-		capabilities:{
-			textDocumentSync:{
-				openClose:true,
-				change:TextDocumentSyncKind.Incremental
+		capabilities: {
+			textDocumentSync: {
+				openClose: true,
+				change: TextDocumentSyncKind.Incremental
 			},
-			completionProvider:{
+			completionProvider: {
 				resolveProvider: true
 			}
 		}
@@ -38,13 +43,13 @@ connection.onInitialize((params:InitializeParams)=>{
 });
 
 // 三次握手后触发
-connection.onInitialized(()=>{
-	connection.window.showInformationMessage('Hello World! from server side.');
+connection.onInitialized(() => {
+	//connection.window.showInformationMessage('Hello World! from server side.');
 });
 
 // 以下为范例，可以用json来转
 connection.onCompletion(
-	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] =>{
+	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
 		return [
 			{
 				label: 'TextView' + _textDocumentPosition.position.character,
@@ -52,7 +57,7 @@ connection.onCompletion(
 				data: 1
 			},
 			{
-				label:'Button' + _textDocumentPosition.position.line,
+				label: 'Button' + _textDocumentPosition.position.line,
 				kind: CompletionItemKind.Text,
 				data: 2
 			},
@@ -66,7 +71,7 @@ connection.onCompletion(
 );
 
 connection.onCompletionResolve(
-	(item: CompletionItem):CompletionItem =>{
+	(item: CompletionItem): CompletionItem => {
 		if (item.data === 1) {
 			item.detail = 'TextView';
 			item.documentation = 'TextView documentation';

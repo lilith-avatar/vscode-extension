@@ -2,7 +2,7 @@
     "name": "boom-party-client",
     "displayName": "Boom! Party",
     "description": "Extension for Boom! Party editor (Project DaVinci).",
-    "version": "0.2.0",
+    "version": "0.1.7",
     "engines": {
         "vscode": "^1.55.0"
     },
