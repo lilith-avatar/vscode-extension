@@ -12,11 +12,6 @@ import * as rimraf from 'rimraf';
 import { workspace } from 'vscode';
 import EventEmitter = require('events');
 
-enum NodeType {
-    ModuleScript = 'modulescript',
-    Script = 'script'
-}
-
 //#region Utilities
 
 namespace _ {
@@ -161,7 +156,6 @@ interface Entry {
     label: string,
     uri: vscode.Uri | undefined;
     type: vscode.FileType;
-    nodeType: NodeType | undefined;
     subEntry: Entry[];
 }
 
@@ -232,14 +226,20 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
 
     async _readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
         const children = await _.readdir(uri.fsPath);
-
-        const result: [string, vscode.FileType][] = [];
+        
+        var result: [string, vscode.FileType][] = [];
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             const stat = await this._stat(path.join(uri.fsPath, child));
-            result.push([child, stat.type]);
+            if (stat.type === vscode.FileType.File){
+                result.push([child, stat.type]);
+            }else{
+                const dirUri = vscode.Uri.file(path.join(uri.fsPath, child));
+                const fileInFolder = await this.readDirectory(dirUri);
+                console.log(fileInFolder);
+                result = result.concat(fileInFolder);
+            }
         }
-
         return Promise.resolve(result);
     }
 
@@ -341,7 +341,6 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 label: filename,
                 uri: uri,
                 type: vscode.FileType.File,
-                nodeType: this.getNodeType(filename),
                 subEntry: []
             };
         } else {
@@ -349,7 +348,6 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 label: link,
                 uri: undefined,
                 type: vscode.FileType.SymbolicLink,
-                nodeType: undefined,
                 subEntry: []
             };
         }
@@ -401,8 +399,8 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
             );
             treeItem.label = this.getNodePath(element.label)[this.getNodePath(element.label).length - 1];
             treeItem.iconPath = {
-                light: path.join(__filename, '..', '..', '..','resources', element.nodeType + '.svg'),
-                dark: path.join(__filename, '..', '..', '..','resources', element.nodeType + '.svg')
+                light: path.join(__filename, '..', '..', '..','resources', this.getNodeType(element.label) + '.svg'),
+                dark: path.join(__filename, '..', '..', '..','resources', this.getNodeType(element.label) + '.svg')
             };
         } else {
             treeItem = new vscode.TreeItem(
@@ -433,19 +431,13 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         }
     }
 
-    getNodeType(fileName: string): NodeType | undefined {
+    getNodeType(fileName: string): string | undefined {
         const result = fileName.match(/(?<=\.)\w+(?=\.)/g);
         if (result) {
-            if (result[0] === 'ModuleScript') {
-                return NodeType.ModuleScript;
-            } else {
-                return NodeType.Script;
-            }
-
+            return result[0];
         }
+        return;
     }
-
-    
 
 }
 
