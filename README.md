@@ -23,4 +23,7 @@
 
 ![](./resources/snapshot/BoomTree.png)
 
+### 代码格式化
+![](./resources/snapshot/format.gif)
+
 
