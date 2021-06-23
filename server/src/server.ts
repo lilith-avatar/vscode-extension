@@ -12,9 +12,15 @@ import {
 	TextDocumentSyncKind,
 	TextDocumentPositionParams,
 	CompletionItem,
-	CompletionItemKind
+	CompletionItemKind,
+	DocumentFormattingParams,
+	TextEdit,
+	DocumentRangeFormattingParams
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
+import * as fmter from 'lua-fmt';
+import { buildDocumentFormatEdits, buildDocumentRangeFormatEdits } from './services/formatServeice';
+import { FormatOptions } from './config';
 
 // let watchDog = new WatchDog
 // 创建链接，通过ipc管道与客户端通信
@@ -25,6 +31,8 @@ let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
+let fmtOp = new FormatOptions();
+
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -33,11 +41,9 @@ connection.onInitialize((params: InitializeParams) => {
 		capabilities: {
 			textDocumentSync: {
 				openClose: true,
-				change: TextDocumentSyncKind.Incremental
+				change: TextDocumentSyncKind.Full
 			},
-			completionProvider: {
-				resolveProvider: true
-			}
+			documentFormattingProvider:true
 		}
 	};
 });
@@ -47,42 +53,30 @@ connection.onInitialized(() => {
 	//connection.window.showInformationMessage('Hello World! from server side.');
 });
 
-// 以下为范例，可以用json来转
-connection.onCompletion(
-	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		return [
-			{
-				label: 'TextView' + _textDocumentPosition.position.character,
-				kind: CompletionItemKind.Text,
-				data: 1
-			},
-			{
-				label: 'Button' + _textDocumentPosition.position.line,
-				kind: CompletionItemKind.Text,
-				data: 2
-			},
-			{
-				label: 'ListView',
-				kind: CompletionItemKind.Text,
-				data: 3
-			}
-		];
+connection.onDocumentFormatting(
+	(params: DocumentFormattingParams): TextEdit[] => {
+		const uri = params.textDocument.uri;
+		const document = documents.get(uri);
+
+		if (!document) {
+			return [];
+		}
+
+		return buildDocumentFormatEdits(uri, document, fmtOp, params.options);
 	}
 );
 
-connection.onCompletionResolve(
-	(item: CompletionItem): CompletionItem => {
-		if (item.data === 1) {
-			item.detail = 'TextView';
-			item.documentation = 'TextView documentation';
-		} else if (item.data === 2) {
-			item.detail = 'Button';
-			item.documentation = 'JavaScript documentation';
-		} else if (item.data === 3) {
-			item.detail = 'ListView';
-			item.documentation = 'ListView documentation';
+connection.onDocumentRangeFormatting(
+	(params: DocumentRangeFormattingParams): TextEdit[] => {
+
+		const uri = params.textDocument.uri;
+		const document = documents.get(uri);
+
+		if (!document) {
+			return [];
 		}
-		return item;
+
+		return buildDocumentRangeFormatEdits(uri, document, params.range, fmtOp, params.options);
 	}
 );
 
