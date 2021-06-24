@@ -4,23 +4,28 @@
  *--------------------------------------------------------------------------------------------*/
 
 import {
-	createConnection,
-	ProposedFeatures,
-	TextDocuments,
-	Connection,
-	InitializeParams,
-	TextDocumentSyncKind,
-	TextDocumentPositionParams,
-	CompletionItem,
-	CompletionItemKind,
-	DocumentFormattingParams,
-	TextEdit,
-	DocumentRangeFormattingParams
+    createConnection,
+    ProposedFeatures,
+    TextDocuments,
+    Connection,
+    InitializeParams,
+    TextDocumentSyncKind,
+    TextDocumentPositionParams,
+    DiagnosticSeverity,
+    Diagnostic,
+    CompletionItem,
+    CompletionItemKind,
+    DocumentFormattingParams,
+    TextEdit,
+    DocumentRangeFormattingParams
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as fmter from 'lua-fmt';
 import { buildDocumentFormatEdits, buildDocumentRangeFormatEdits } from './services/formatServeice';
-import { FormatOptions } from './config';
+import { FormatOptions, LintingOptions, Settings } from './config';
+import { buildLintingErrors } from './services/lintingService';
+import { basename } from 'path';
+import { Uri } from 'vscode';
 
 // let watchDog = new WatchDog
 // 创建链接，通过ipc管道与客户端通信
@@ -33,52 +38,60 @@ let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
 let fmtOp = new FormatOptions();
 
-
 connection.onInitialize((params: InitializeParams) => {
-	let capabilities = params.capabilities;
+    let capabilities = params.capabilities;
 
-	return {
-		capabilities: {
-			textDocumentSync: {
-				openClose: true,
-				change: TextDocumentSyncKind.Full
-			},
-			documentFormattingProvider:true
-		}
-	};
+    return {
+        capabilities: {
+            textDocumentSync: {
+                openClose: true,
+                change: TextDocumentSyncKind.Full
+            },
+            documentFormattingProvider: true
+        }
+    };
 });
 
 // 三次握手后触发
 connection.onInitialized(() => {
-	//connection.window.showInformationMessage('Hello World! from server side.');
+    //connection.window.showInformationMessage('Hello World! from server side.');
 });
 
+// ****************** 代码格式化 *************************
 connection.onDocumentFormatting(
-	(params: DocumentFormattingParams): TextEdit[] => {
-		const uri = params.textDocument.uri;
-		const document = documents.get(uri);
+    (params: DocumentFormattingParams): TextEdit[] => {
+        const uri = params.textDocument.uri;
+        const document = documents.get(uri);
 
-		if (!document) {
-			return [];
-		}
+        if (!document) {
+            return [];
+        }
 
-		return buildDocumentFormatEdits(uri, document, fmtOp, params.options);
-	}
+        return buildDocumentFormatEdits(uri, document, fmtOp, params.options);
+    }
 );
 
 connection.onDocumentRangeFormatting(
-	(params: DocumentRangeFormattingParams): TextEdit[] => {
+    (params: DocumentRangeFormattingParams): TextEdit[] => {
 
-		const uri = params.textDocument.uri;
-		const document = documents.get(uri);
+        const uri = params.textDocument.uri;
+        const document = documents.get(uri);
 
-		if (!document) {
-			return [];
-		}
+        if (!document) {
+            return [];
+        }
 
-		return buildDocumentRangeFormatEdits(uri, document, params.range, fmtOp, params.options);
-	}
+        return buildDocumentRangeFormatEdits(uri, document, params.range, fmtOp, params.options);
+    }
 );
+
+// ***************** 静态检查 ***************************
+documents.onDidChangeContent((change) => {
+    parseAndLint(change.document);
+});
+
+function parseAndLint(document: TextDocument) {
+}
 
 documents.listen(connection);
 

@@ -305,10 +305,10 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     ////* avatar methods ⬇️
 
     // 解析结果，生成对应的树
-    parseResult(result: [string, vscode.FileType][],folderName?:string): Entry[] {
+    parseResult(result: [string, vscode.FileType][], folderName?: string): Entry[] {
         let entries: Entry[] = [];
-        entries = [{label:folderName,uri:undefined,type:vscode.FileType.SymbolicLink,subEntry:[]}];
-        
+        entries = [{ label: folderName, uri: undefined, type: vscode.FileType.SymbolicLink, subEntry: [] }];
+
         for (let rs of result) {
             if (rs[1] !== vscode.FileType.File) continue;
             let filename = rs[0];
@@ -316,7 +316,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
             filename = filename.replace('.Script.lua', '');
             const paths = this.getNodePath(filename);
             let tempEntries = entries[0].subEntry;
-            
+
             for (let i = 0; i < paths.length; i++) {
                 if (i === paths.length - 1) {
                     tempEntries = this.buildTree(tempEntries, paths[i], rs[0]);
@@ -325,7 +325,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                 }
             }
         }
-        
+
         return entries;
     }
 
@@ -389,7 +389,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
                     }
                     return a[1] === vscode.FileType.SymbolicLink ? -1 : 1;
                 });
-                entries = entries.concat(this.parseResult(children,workspaceFolders[i].name));
+                entries = entries.concat(this.parseResult(children, workspaceFolders[i].name));
             }
             return entries;
         }
