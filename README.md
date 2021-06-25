@@ -12,6 +12,7 @@
 ## 功能
 - [x] 树状图
 - [x] 代码格式化
+- [x] 用户片段
 - [ ] 静态检查
 - [ ] 代码补全
 - [ ] excel转lua
@@ -25,5 +26,9 @@
 
 ### 代码格式化
 ![](./resources/snapshot/format.gif)
+
+### 用户片段
+除了常见的lua用户片段以外，还支持ava客户端和服务器端代码模板生成（通过输入`smod`或者`cmod`）
+![](./resources/snapshot/userSnippets.gif)
 
 
