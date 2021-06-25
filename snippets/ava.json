@@ -1,36 +1,44 @@
 {
-	"cmod":{
-		"prefix": "cmod",
-		"body": [
-			"---@module ${1:testModule}",
-			"---@copyright Lilith Games, Avatar Team",
-			"---@author XXX, XXXX",
-			"local ${1:testModule},this = ModuleUtil.New('${1:testModule}',ClientBase)",
-			"\n---初始化函数",
-			"function ${1:testModule}:Init()",
-			"end",
-			"\n---Update函数",
-			"function ${1:testModule}:Update()",
-			"end",
-			"\nreturn ${1:testModule}"
-		],
-		"description": "创建客户端模块"
-	},
-	"smod":{
-		"prefix": "smod",
-		"body": [
-			"---@module ${1:testModule}",
-			"---@copyright Lilith Games, Avatar Team",
-			"---@author XXX, XXXX",
-			"local ${1:testModule},this = ModuleUtil.New('${1:testModule}',ServerBase)",
-			"\n---初始化函数",
-			"function ${1:testModule}:Init()",
-			"end",
-			"\n---Update函数",
-			"function ${1:testModule}:Update()",
-			"end",
-			"\nreturn ${1:testModule}"
-		],
-		"description": "创建服务器模块"
-	}
+    "cmod": {
+        "prefix": "cmod",
+        "body": [
+            "---@module ${1:testModule}",
+            "---@copyright Lilith Games, Avatar Team",
+            "---@author XXX, XXXX",
+            "local ${1:testModule},this = ModuleUtil.New('${1:testModule}',ClientBase)",
+            "\nfunction ${1:testModule}:Awake()",
+            "end",
+            "\nfunction ${1:testModule}:Start()",
+            "end",
+            "\nfunction ${1:testModule}:Update()",
+            "end",
+            "\nfunction ${1:testModule}:LateUpdate()",
+            "end",
+            "\nfunction ${1:testModule}:FixedUpdate()",
+            "end",
+            "\nreturn ${1:testModule}"
+        ],
+        "description": "创建客户端模块"
+    },
+    "smod": {
+        "prefix": "smod",
+        "body": [
+            "---@module ${1:testModule}",
+            "---@copyright Lilith Games, Avatar Team",
+            "---@author XXX, XXXX",
+            "local ${1:testModule},this = ModuleUtil.New('${1:testModule}',ServerBase)",
+            "\nfunction ${1:testModule}:Awake()",
+            "end",
+            "\nfunction ${1:testModule}:Start()",
+            "end",
+            "\nfunction ${1:testModule}:Update()",
+            "end",
+            "\nfunction ${1:testModule}:LateUpdate()",
+            "end",
+            "\nfunction ${1:testModule}:FixedUpdate()",
+            "end",
+            "\nreturn ${1:testModule}"
+        ],
+        "description": "创建服务器模块"
+    }
 }
