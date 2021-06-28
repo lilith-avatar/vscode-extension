@@ -2,7 +2,7 @@
     "name": "boom-party",
     "displayName": "Boom! Party",
     "description": "Extension for Boom! Party editor (Project DaVinci).",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "engines": {
         "vscode": "^1.55.0"
     },
