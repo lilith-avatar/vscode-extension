@@ -231,12 +231,35 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         var result: [string, vscode.FileType][] = [];
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
+
             const stat = await this._stat(path.join(uri.fsPath, child));
             if (stat.type === vscode.FileType.File && this.isLua(child)) {
                 result.push([child, stat.type]);
             } else if (stat.type === vscode.FileType.Directory) {
                 const dirUri = vscode.Uri.file(path.join(uri.fsPath, child));
                 const fileInFolder = await this.readDirectory(dirUri);
+                result = result.concat(fileInFolder);
+            }
+        }
+        return Promise.resolve(result);
+    }
+
+    readAllFiles(uri: vscode.Uri): [string, vscode.FileType, string][] | Thenable<[string, vscode.FileType, string][]> {
+        return this._readAllFiles(uri);
+    }
+
+    async _readAllFiles(uri: vscode.Uri): Promise<[string, vscode.FileType, string][]> {
+        const children = await _.readdir(uri.fsPath);
+        var result: [string, vscode.FileType, string][] = [];
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+
+            const stat = await this._stat(path.join(uri.fsPath, child));
+            if (stat.type === vscode.FileType.File && this.isLua(child)) {
+                result.push([child, stat.type, path.join(uri.fsPath, child)]);
+            } else if (stat.type === vscode.FileType.Directory) {
+                const dirUri = vscode.Uri.file(path.join(uri.fsPath, child));
+                const fileInFolder = await this.readAllFiles(dirUri);
                 result = result.concat(fileInFolder);
             }
         }
@@ -305,7 +328,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     ////* avatar methods ⬇️
 
     // 解析结果，生成对应的树
-    parseResult(result: [string, vscode.FileType][], folderName?: string): Entry[] {
+    parseResult(result: [string, vscode.FileType, string][], folderName?: string): Entry[] {
         let entries: Entry[] = [];
         entries = [{ label: folderName, uri: undefined, type: vscode.FileType.SymbolicLink, subEntry: [] }];
 
@@ -319,7 +342,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
 
             for (let i = 0; i < paths.length; i++) {
                 if (i === paths.length - 1) {
-                    tempEntries = this.buildTree(tempEntries, paths[i], rs[0]);
+                    tempEntries = this.buildTree(tempEntries, paths[i], rs[0], rs[2]);
                 } else {
                     tempEntries = this.buildTree(tempEntries, paths[i]);
                 }
@@ -330,7 +353,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
     }
 
     // 生成结果树
-    buildTree(entries: Entry[], link: string, filename?: string): Entry[] {
+    buildTree(entries: Entry[], link: string, filename?: string, fileUri?: string): Entry[] {
         for (let entry of entries) {
             if (entry.label === link) {
                 return entry.subEntry;
@@ -338,9 +361,11 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
         }
         let newEntry: Entry;
         if (filename && vscode.workspace.workspaceFolders) {
-            // todo: 这里应该读取所有文件夹下的文件
             const workspaceFolder = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file')[0];
-            const uri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, filename));
+            //const uri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, filename));
+            const uri = vscode.Uri.file(fileUri);
+            console.log(uri);
+
             newEntry = {
                 label: filename,
                 uri: uri,
@@ -382,7 +407,7 @@ export class BoomTreeDataProvider implements vscode.TreeDataProvider<Entry>, vsc
             const workspaceFolders = vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file');
             var entries = [];
             for (let i = 0; i < workspaceFolders.length; i++) {
-                const children = await this.readDirectory(workspaceFolders[i].uri);
+                const children = await this.readAllFiles(workspaceFolders[i].uri);
                 children.sort((a, b) => {
                     if (a[1] !== b[1]) {
                         return a[0].localeCompare(b[0]);
