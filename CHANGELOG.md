@@ -1,3 +1,8 @@
+## `v0.1.8` (2021-6-28)
+
+### Improvement
+- 修复无法从Boom!Tree打开文件的bug
+
 ## `v0.1.7` (2021-6-21)
 
 ### New Features

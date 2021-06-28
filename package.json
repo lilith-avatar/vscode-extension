@@ -1,35 +1,35 @@
 {
-	"name": "boom-party",
-	"displayName": "Boom! Party",
-	"description": "Extension for Boom! Party editor (Project DaVinci).",
-	"version": "0.1.7",
-	"engines": {
-		"vscode": "^1.55.0"
-	},
-	"license": "MIT",
-	"publisher": "lilith-avatar",
-	"icon": "logo.png",
-	"categories": [
-		"Snippets",
-		"Other",
-		"Programming Languages",
-		"Formatters",
-		"Themes"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/lilith-avatar/vscode-extension.git"
-	},
-	"activationEvents": [
-		"onCommand:boom-party.helloDaVinci",
-		"onView:fileExplorer"
-	],
-	"main": "./client/out/extension.js",
-	"activationEvents":[
-		"onLanguage:lua"
-	],
-	"contributes": {
-		"languages": [{
+    "name": "boom-party",
+    "displayName": "Boom! Party",
+    "description": "Extension for Boom! Party editor (Project DaVinci).",
+    "version": "0.1.8",
+    "engines": {
+        "vscode": "^1.55.0"
+    },
+    "license": "MIT",
+    "publisher": "lilith-avatar",
+    "icon": "logo.png",
+    "categories": [
+        "Snippets",
+        "Other",
+        "Programming Languages",
+        "Formatters",
+        "Themes"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lilith-avatar/vscode-extension.git"
+    },
+    "activationEvents": [
+        "onCommand:boom-party.helloDaVinci",
+        "onView:fileExplorer"
+    ],
+    "main": "./client/out/extension.js",
+    "activationEvents": [
+        "onLanguage:lua"
+    ],
+    "contributes": {
+        "languages": [{
             "id": "lua",
             "extensions": [
                 ".lua"
@@ -49,12 +49,11 @@
                 "path": "./snippets/ldoc.json"
             }
         ],
-        "commands": [
-			{
-				"command": "boom-party.helloDaVinci",
-				"title": "Hello Da Vinci"
-			},
-			{
+        "commands": [{
+                "command": "boom-party.helloDaVinci",
+                "title": "Hello Da Vinci"
+            },
+            {
                 "command": "fileExplorer.refreshFile",
                 "title": "Refresh",
                 "icon": {
@@ -66,103 +65,101 @@
                 "command": "fileExplorer.openFile",
                 "title": "Open File"
             },
-			{
-				"command": "languageServer.startStreaming",
-				"title": "Start Stream logs into languageServer.port"
-			}
+            {
+                "command": "languageServer.startStreaming",
+                "title": "Start Stream logs into languageServer.port"
+            }
         ],
         "views": {
-			"explorer": [{
-				"id": "fileExplorer",
-				"name": "Boom! Tree"
-			}]
-		},
-		"menus": {
-			"view/title": [{
-				"command": "fileExplorer.refreshFile",
-				"when": "view == fileExplorer",
-				"group": "navigation"
-			}]
-		},
-		"configuration": {
-			"title": "Boom! Party configuration",
-			"properties": {
-				"languageServer.maxNumberOfProblems": {
-					"scope": "resource",
-					"type": "number",
-					"default": 100,
-					"description": "Controls the maximum number of problems produced by the server."
-				},
-				"languageServer.trace.server": {
-					"scope": "window",
-					"type": "object",
-					"description": "Traces the communication between VS Code and the language server.",
-					"properties": {
-						"verbosity":{
-							"type":"string",
-							"description": "Controls the verbosity of the trace.",
-							"enum": [
-								"off",
-								"message",
-								"verbose"
-							],
-							"default": "off"
-						},
-						"format":{
-							"type": "string",
-							"description": "Controls the output format of the trace.",
-							"enum": [
-								"text",
-								"json"
-							],
-							"default": "text"
-						}
-					}
-				},
-				"languageServer.port":{
-					"type":"number",
-					"default":7000,
-					"scope": "window",
-					"description": "The WebSocket port to stream LSP log data into."
-				}
-			}
-		},
-		"grammars": [
-			{
-				"language": "lua",
-				"scopeName": "source.lua",
-				"path": "./syntaxes/lua.tmLanguage.json"
-			}
-		]
-		
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -b",
-		"watch": "tsc -b -w",
-		"postinstall": "cd client && npm install && cd ../server && npm install && cd .."
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.3",
-		"@types/mkdirp": "^0.5.2",
-		"@types/mocha": "^8.2.2",
-		"@types/node": "^14.14.41",
-		"@types/rimraf": "^2.0.2",
-		"@types/vscode": "^1.55.0",
-		"@typescript-eslint/eslint-plugin": "^4.22.0",
-		"@typescript-eslint/parser": "^4.22.0",
-		"eslint": "^7.24.0",
-		"glob": "^7.1.6",
-		"mocha": "^8.3.2",
-		"typescript": "^4.2.4",
-		"vscode-test": "^1.5.2"
-	},
-	"optionalDependencies": {
-		"fsevents": "^2.2.0"
-	},
-	"dependencies": {
-		"jsonc-parser": "^2.3.1",
-		"mkdirp": "^0.5.1",
-		"rimraf": "^2.7.1"
-	}
+            "explorer": [{
+                "id": "fileExplorer",
+                "name": "Boom! Tree"
+            }]
+        },
+        "menus": {
+            "view/title": [{
+                "command": "fileExplorer.refreshFile",
+                "when": "view == fileExplorer",
+                "group": "navigation"
+            }]
+        },
+        "configuration": {
+            "title": "Boom! Party configuration",
+            "properties": {
+                "languageServer.maxNumberOfProblems": {
+                    "scope": "resource",
+                    "type": "number",
+                    "default": 100,
+                    "description": "Controls the maximum number of problems produced by the server."
+                },
+                "languageServer.trace.server": {
+                    "scope": "window",
+                    "type": "object",
+                    "description": "Traces the communication between VS Code and the language server.",
+                    "properties": {
+                        "verbosity": {
+                            "type": "string",
+                            "description": "Controls the verbosity of the trace.",
+                            "enum": [
+                                "off",
+                                "message",
+                                "verbose"
+                            ],
+                            "default": "off"
+                        },
+                        "format": {
+                            "type": "string",
+                            "description": "Controls the output format of the trace.",
+                            "enum": [
+                                "text",
+                                "json"
+                            ],
+                            "default": "text"
+                        }
+                    }
+                },
+                "languageServer.port": {
+                    "type": "number",
+                    "default": 7000,
+                    "scope": "window",
+                    "description": "The WebSocket port to stream LSP log data into."
+                }
+            }
+        },
+        "grammars": [{
+            "language": "lua",
+            "scopeName": "source.lua",
+            "path": "./syntaxes/lua.tmLanguage.json"
+        }]
+
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -b",
+        "watch": "tsc -b -w",
+        "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.3",
+        "@types/mkdirp": "^0.5.2",
+        "@types/mocha": "^8.2.2",
+        "@types/node": "^14.14.41",
+        "@types/rimraf": "^2.0.2",
+        "@types/vscode": "^1.55.0",
+        "@typescript-eslint/eslint-plugin": "^4.22.0",
+        "@typescript-eslint/parser": "^4.22.0",
+        "eslint": "^7.24.0",
+        "glob": "^7.1.6",
+        "mocha": "^8.3.2",
+        "typescript": "^4.2.4",
+        "vscode-test": "^1.5.2"
+    },
+    "optionalDependencies": {
+        "fsevents": "^2.2.0"
+    },
+    "dependencies": {
+        "jsonc-parser": "^2.3.1",
+        "mkdirp": "^0.5.1",
+        "rimraf": "^2.7.1"
+    }
 }
