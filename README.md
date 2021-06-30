@@ -6,8 +6,22 @@
 
 达芬奇计划，VS Code 插件开发版
 
-## 安装
+
+
+## 在线安装
 本插件可以在微软Vscode插件商店中搜索`Boom! Party`进行安装
+
+## 开发及本地调试
+1. 将本仓库Clone到本地
+``` shell
+$ git clone https://github.com/lilith-avatar/vscode-extension.git
+```
+2. 在项目根目录执行以下命令
+``` shell
+$ npm i
+$ code .
+```
+3. 点击`F5`进行调试
 
 ## 功能
 - [x] 树状图
@@ -17,7 +31,6 @@
 - [ ] 定义跳转
 - [ ] 代码补全
 - [ ] excel转lua
-
 
 ### 树状图
 
