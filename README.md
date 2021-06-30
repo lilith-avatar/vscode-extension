@@ -18,8 +18,7 @@ $ git clone https://github.com/lilith-avatar/vscode-extension.git
 ```
 2. 在项目根目录执行以下命令
 ``` shell
-$ npm i
-$ code .
+$ npm i && code .
 ```
 3. 点击`F5`进行调试
 
