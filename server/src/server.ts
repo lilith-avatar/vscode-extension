@@ -21,9 +21,8 @@ import {
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as fmter from 'lua-fmt';
-import { buildDocumentFormatEdits, buildDocumentRangeFormatEdits } from './services/formatServeice';
+import { buildDocumentFormatEdits, buildDocumentRangeFormatEdits } from './services/formatService';
 import { FormatOptions, LintingOptions, Settings } from './config';
-import { buildLintingErrors } from './services/lintingService';
 import { basename } from 'path';
 import { Uri } from 'vscode';
 
