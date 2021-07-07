@@ -35,13 +35,16 @@ $ npm i && code .
 
 根据工作区打开的文件夹生成对应节点层级的树状图，并显示跟编辑器内一样的脚本文件节点名
 
-![](./resources/snapshot/BoomTree.png)
+![BoomTree](https://user-images.githubusercontent.com/4829591/124733229-970f5000-df46-11eb-944b-58b24dfeec77.png)
 
 ### 代码格式化
-![](./resources/snapshot/format.gif)
+
+![format](https://user-images.githubusercontent.com/4829591/124733261-a0002180-df46-11eb-8548-9b67e917a223.gif)
 
 ### 用户片段
 除了常见的lua用户片段以外，还支持ava客户端和服务器端代码模板生成（通过输入`smod`或者`cmod`）
-![](./resources/snapshot/userSnippets.gif)
+
+![userSnippets](https://user-images.githubusercontent.com/4829591/124733306-aa222000-df46-11eb-886a-ed8f24acf9bc.gif)
+
 
 
